@@ -89,12 +89,60 @@ def get_boards():
 @bp.route('/<int:board_id>', methods=['GET'])
 @jwt_required()
 def get_board(board_id):
-    board = Boards.query.get(board_id)
-    
-    if not board:
-        return error_response('Board not found', 400)
 
-    return jsonify({'id': board.id, 'title': board.title, 'created_at': board.created_at})
+    user_id = int(get_jwt_identity())
+    
+    try:
+        # Fetch board by user_id and board_id
+        board = Boards.query.filter_by(user_id=user_id, id=board_id).first()
+        
+        if not board:
+            return error_response('Board not found', 400)
+        
+      
+        # Fetch columns for this board
+        columns = Columns.query.filter_by(board_id=board.id).order_by(Columns.position).all()
+            
+        columns_data = []
+        for column in columns:
+            # Fetch cards for this column
+            cards = Cards.query.filter_by(column_id=column.id).order_by(Cards.position).all()
+                
+            cards_data = [
+                {
+                    'id': card.id,
+                    'title': card.title,
+                    'description': card.description,
+                    'due_date': card.due_date.isoformat() if card.due_date else None,
+                    'priority': card.priority,
+                    'position': card.position,
+                    'created_at': card.created_at.isoformat() if card.created_at else None
+                }
+                for card in cards
+            ]
+                
+            columns_data.append({
+                'id': column.id,
+                'title': column.title,
+                'position': column.position,
+                'created_at': column.created_at.isoformat() if column.created_at else None,
+                'cards': cards_data
+            })
+            
+        dashboard_data = {
+            'id': board.id,
+            'title': board.title,
+            'created_at': board.created_at.isoformat() if board.created_at else None,
+            'columns': columns_data
+        }
+            
+        return jsonify(dashboard_data), 200
+    
+    except Exception as e:
+        return error_response(f'Failed to fetch dashboard: {str(e)}', 500)
+    
+
+
 
 @bp.route('', methods=['POST'])
 @jwt_required()

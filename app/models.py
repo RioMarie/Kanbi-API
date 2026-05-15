@@ -34,7 +34,7 @@ class Cards(db.Model):
     column_id = db.Column(db.Integer, db.ForeignKey('columns.id', ondelete='CASCADE'), nullable=False)
     title = db.Column(db.String(256), nullable=False)
     description = db.Column(db.String(256), nullable=False)
-    due_date = db.Column(db.DateTime, default=datetime.now)
+    due_date = db.Column(db.Date)
     priority = db.Column(db.Integer, nullable=False)
     position = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now)

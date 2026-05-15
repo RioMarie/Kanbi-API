@@ -10,7 +10,7 @@ class CardSchema(Schema):
     title = fields.Str(required=True, validate=validate.Length(min=1, max=255))
     position = fields.Int(required=True)
     description = fields.Str(required=True, validate=validate.Length(min=1, max=255))
-    due_date = fields.DateTime(required=True)
+    due_date = fields.Date(required=True)
     priority = fields.Int(required=True)
     
 card_schema = CardSchema()

@@ -40,7 +40,11 @@ def login():
         # Create JWT token (expires in 24 hours)
         access_token = create_access_token(
             identity=str(user.id), # ← Convert to string
-            expires_delta=timedelta(hours=24)
+            expires_delta=timedelta(hours=24),
+             additional_claims={
+                'email': user.email,
+                'user_id': user.id
+            }
         )
         
         return jsonify({

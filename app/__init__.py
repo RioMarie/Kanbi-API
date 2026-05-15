@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 from dotenv import load_dotenv
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 
 load_dotenv()
 
@@ -11,6 +12,12 @@ jwt = JWTManager()
 
 def create_app():
     app = Flask(__name__)
+    
+    # CORS configuration
+    allowed_origins = os.getenv('ALLOWED_ORIGINS').split(',')
+    
+    CORS(app, origins=allowed_origins, supports_credentials=True)
+    
     
     # DB Config
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
